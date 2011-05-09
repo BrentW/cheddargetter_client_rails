@@ -1,6 +1,9 @@
 require 'active_support'
+require 'cheddargetter_client_ruby'
 
 module CheddargetterClientRails
+  autoload :Subscription, 'cheddargetter_client_rails/subscription'
+  
   def self.included(base)
     base.extend ClassMethods
   end

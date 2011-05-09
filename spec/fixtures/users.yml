@@ -1,0 +1,5 @@
+user:
+  first_name:         John
+  last_name:          User
+  email:              john.user@example.com
+  customer_code:      JOHN_USER

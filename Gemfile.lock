@@ -1,12 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.0.7)
-      activesupport (= 3.0.7)
-      builder (~> 2.1.2)
-      i18n (~> 0.5.0)
     activesupport (3.0.7)
-    builder (2.1.2)
     cheddargetter_client_ruby (0.3.1)
       httparty (>= 0.4.3)
       httparty (>= 0.4.3)
@@ -15,7 +10,6 @@ GEM
     git (1.2.5)
     httparty (0.7.7)
       crack (= 0.1.8)
-    i18n (0.5.0)
     jeweler (1.6.0)
       bundler (~> 1.0.0)
       git (>= 1.2.5)
@@ -35,7 +29,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activemodel
   activesupport (>= 2.3.5)
   bundler (~> 1.0.0)
   cheddargetter_client_ruby

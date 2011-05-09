@@ -9,10 +9,6 @@ describe "CheddargetterClientRails" do
   end
   
    describe "inclusion of class methods" do
-    before {
-      class TestUser < ActiveRecord::Base
-      end
-    }
     let(:user_class) { TestUser } 
 
     subject { user_class.respond_to?(:cheddargetter_billable_on) }
