@@ -17,13 +17,23 @@ module CheddargetterClientRails
        end
     end
     
-    def new_record?
-      true
+    def supplement_subscription_fields
+      self.class.shared_columns.each do |subscription_column, user_attribute|
+        subscription.send(subscription_column.to_s + '=', send(user_attribute))
+      end
     end
     
-    def skip_cheddargetter
-      false
-    end    
+    def create_subscription
+      subscription.create unless skip_cheddargetter
+    end
+    
+    def current_subscription
+      @current_subscription ||= CheddargetterClientRails::Subscription.get(customer_code)
+    end
+    
+    def destroy_subscription
+      current_subscription.try(:destroy)
+    end
   end
   
   module ClassMethods
@@ -38,7 +48,11 @@ module CheddargetterClientRails
         raise ArgumentError.new('Must supply customer code column.')
       end
       
-      validate :validate_subscription      
+      attr_accessor :skip_cheddargetter
+      
+      validate        :validate_subscription
+      before_create   :create_subscription
+      before_destroy  :destroy_subscription           
     end
 
     def customer_code_column

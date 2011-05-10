@@ -91,6 +91,20 @@ describe "CheddargetterClientRails" do
     end
   end
   
+  describe 'before_create' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:test_user) {
+      TestUser.new  
+    }
+
+    
+    before  { test_user.should_receive :create_subscription }
+    subject { test_user.run_callbacks(:save) }
+    it do subject end
+  end
+  
   describe 'subscription' do
     let(:user)          { double("TestUser", 
       :customer_code  => "JOHN_DOE_CODE",
@@ -137,30 +151,156 @@ describe "CheddargetterClientRails" do
     
     subject { user.validate_subscription }
     
-    context 'subscription is valid' do
-      before {
-        user.should_receive(:skip_cheddargetter).and_return false
-        user.should_receive(:new_record?).and_return true
-        subscription.should_receive(:valid?).and_return true         
-      }
+    context 'with subscription' do
+      context 'that is valid' do
+        before {
+          user.should_receive(:skip_cheddargetter).and_return false
+          user.should_receive(:new_record?).and_return true
+          subscription.should_receive(:valid?).and_return true         
+        }
       
-      it "should not add errors" do
-        subject
-        (user.errors.length < 1).should be_true
+        it "should not add errors" do
+          subject
+          (user.errors.length < 1).should be_true
+        end
       end
-    end
   
-    context 'when subscription is invalid' do
-      before {
-        user.should_receive(:skip_cheddargetter).and_return false
-        user.should_receive(:new_record?).and_return true
-        subscription.should_receive(:valid?).and_return false        
-      }
+      context 'that is invalid' do
+        before {
+          user.should_receive(:skip_cheddargetter).and_return false
+          user.should_receive(:new_record?).and_return true
+          subscription.should_receive(:valid?).and_return false        
+        }
 
-      it "should add errors" do
-        subject
-        (user.errors.length < 1).should be_false
+        it "should add errors" do
+          subject
+          (user.errors.length < 1).should be_false
+        end
+      end
+      
+      context 'with no subscription' do
+        before {
+          user.stub(:skip_cheddargetter).and_return false
+          user.stub(:new_record?).and_return true
+        }
+        
+        specify { subject; user.valid?.should be_false }
+      end
+      
+      context 'when skip_cheddargetter returns true' do
+        before {
+          user.stub(:skip_cheddargetter).and_return true
+          user.stub(:new_record?).and_return true
+          subscription.stub(:valid?).and_return true          
+        }
+
+        specify { subject; user.valid?.should be_true }
+      end
+      
+      context 'when record is not new' do
+        before {
+          user.stub(:skip_cheddargetter).and_return false
+          user.stub(:new_record?).and_return false
+          subscription.stub(:valid?).and_return false        
+        }
+
+        specify { subject; user.valid?.should be_true }                
       end
     end
+  end
+  
+  describe 'supplement_subscription_fields' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:user) {
+      TestUser.new  
+    }
+    
+    before { user.stub(:shared_columns).and_return({
+                                                :firstName    => :first_name, 
+                                                :lastName     => :last_name, 
+                                                :ccFirstName  => :first_name, 
+                                                :ccLastName   => :last_name, 
+                                                :planCode     => :plan_code
+                                              })
+    }
+                                            
+    before {
+      user.customer_code  = "FIRST_NAME" 
+      user.first_name     = "First"
+      user.last_name      = "Last"
+      user.plan_code      = "TEST_PLAN"
+    }
+    
+    subject { user.supplement_subscription_fields }
+    specify { 
+      subject
+      user.subscription.firstName.should == "First"
+      user.subscription.lastName.should == "Last"
+      user.subscription.planCode.should == "TEST_PLAN"
+    }
+  end
+
+  describe 'create_subscription' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:user) {
+      TestUser.new  
+    }
+    
+    subject { user.create_subscription }
+    
+    context 'when skipping cheddargetter' do
+      before { user.skip_cheddargetter = true }
+      before { user.subscription.should_not_receive(:create) }
+      it do subject end
+    end
+    
+    context 'when not skipping cheddargetter' do
+      before { user.skip_cheddargetter = false }
+      before { user.subscription.should_receive(:create) }
+      it do subject end
+    end
+  end
+  
+  describe 'current_subscription' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:user) {
+      TestUser.new  
+    }
+    
+    let(:subscription) { CheddargetterClientRails::Subscription.new }    
+    before { CheddargetterClientRails::Subscription.stub(:get).and_return subscription }
+    
+    context 'when it has not been accesssed' do
+      subject { user.current_subscription }
+      it { should eq(subscription) }
+    end    
+
+    context 'when it has been accesssed' do
+      before { user.current_subscription.firstName = 'First' }
+      subject { user.current_subscription.firstName }
+      it { should eq("First")}
+    end    
+  end
+  
+  describe 'destroy_subscription' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:user) {
+      TestUser.new  
+    }
+    
+    let(:subscription) { CheddargetterClientRails::Subscription.new }    
+    before { CheddargetterClientRails::Subscription.stub(:get).and_return subscription }
+    before { subscription.should_receive(:destroy) }
+    
+    subject { user.destroy_subscription }
+    it { subject }
   end
 end
