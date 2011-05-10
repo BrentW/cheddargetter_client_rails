@@ -18,10 +18,6 @@ CGClient      = CheddarGetter::Client.new(:product_code => CGProductCode,
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  class TestUser < ActiveRecord::Base
-    attr_accessor :customer_code
-  end
-  
   config.mock_with :rspec
   
   config.before { stub_cheddargetter }
