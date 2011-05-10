@@ -203,7 +203,7 @@ describe "CheddargetterClientRails" do
       TestUser.new  
     }
     
-    before { user.stub(:shared_columns).and_return({
+    before { user.class.stub(:shared_columns).and_return({
                                                 :firstName    => :first_name, 
                                                 :lastName     => :last_name, 
                                                 :ccFirstName  => :first_name, 
@@ -226,6 +226,23 @@ describe "CheddargetterClientRails" do
       user.subscription.lastName.should == "Last"
       user.subscription.planCode.should == "TEST_PLAN"
     }
+    
+    context 'when planCode is a string' do
+      let!(:user) {
+        TestUser.new  
+      }
+
+      before { user.class.stub(:shared_columns).and_return({
+                                                  :planCode     => "EVERYBODYS_PLAN"
+                                                })
+      }
+
+      subject { user.supplement_subscription_fields }
+      specify { 
+        subject
+        user.subscription.planCode.should == "EVERYBODYS_PLAN"
+      }
+    end
   end
 
   describe 'create_subscription' do

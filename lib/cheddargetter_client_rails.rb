@@ -19,7 +19,11 @@ module CheddargetterClientRails
     
     def supplement_subscription_fields
       self.class.shared_columns.each do |subscription_column, user_attribute|
-        subscription.send(subscription_column.to_s + '=', send(user_attribute))
+        if(subscription_column == :planCode && user_attribute.is_a?(String)) #user can specify planCode as a string
+          subscription.send(subscription_column.to_s + '=', user_attribute)
+        else
+          subscription.send(subscription_column.to_s + '=', send(user_attribute))
+        end
       end
     end
     
