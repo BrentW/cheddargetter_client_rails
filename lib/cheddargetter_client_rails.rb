@@ -47,7 +47,7 @@ module CheddargetterClientRails
     def cheddargetter_billable_on(*args)
       raise ArgumentError.new('Must supply customer code column.') if args.length < 1
       self.customer_code_column = args.shift
-      raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !self.instance_methods.include?(customer_code_column.to_s)        
+      raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !responds_to_customer_code_column?        
       
       if args.length > 0
         self.shared_columns = args.shift[:shared_columns]
@@ -58,6 +58,11 @@ module CheddargetterClientRails
       validate        :validate_subscription
       after_create   :create_subscription
       before_destroy  :destroy_subscription           
+    end
+
+    def responds_to_customer_code_column?
+      self.instance_methods.include?(customer_code_column.to_s) || 
+      self.column_names.include?(customer_code_column.to_s)      
     end
 
     def customer_code_column

@@ -6,7 +6,11 @@ describe "CheddargetterClientRails" do
   before {
     class TestUser < ActiveRecord::Base
       attr_accessor :customer_code, :first_name, :last_name, :plan_code
-      
+
+      def self.column_names
+        []
+      end
+            
       cheddargetter_billable_on :customer_code, :shared_columns => {
                                                   :firstName    => :first_name, 
                                                   :lastName     => :last_name, 
@@ -14,6 +18,8 @@ describe "CheddargetterClientRails" do
                                                   :ccLastName   => :last_name, 
                                                   :planCode     => :plan_code
                                                 }
+
+
     end
   }
   
@@ -195,6 +201,71 @@ describe "CheddargetterClientRails" do
 
         specify { subject; user.valid?.should be_true }                
       end
+    end
+  end
+  
+  describe 'responds_to_customer_code_column?' do
+    context 'when columns include message' do
+      before {
+        class MessageInColumns < ActiveRecord::Base          
+          def self.column_names
+            ['customer_code']
+          end
+          
+          cheddargetter_billable_on :customer_code
+        end                    
+      }
+      
+      let(:record_class) {
+        MessageInColumns
+      }
+
+      before { record_class.stub(:connection).and_return mock(:columns => [])}      
+      
+      subject { record_class.responds_to_customer_code_column? }
+      it { should be_true }
+    end
+    
+    context 'when instance methods includes message' do
+      before {
+        class MessageInMethods < ActiveRecord::Base          
+          
+          def self.column_names
+            []
+          end
+
+          def customer_code
+            'TEST_CODE'
+          end
+          
+          p 'Make not that if method and not column, then it must be declared before cheddargetter_billable_on'
+                    
+          cheddargetter_billable_on :customer_code
+        end        
+      }
+      
+      let(:record_class) {
+        MessageInMethods
+      }
+  
+      before { record_class.stub(:connection).and_return mock(:columns => [])}      
+  
+      subject { record_class.responds_to_customer_code_column? }      
+      it { should be_true }
+    end
+    
+    context 'when instance does not respond to message' do
+      subject {
+        class MessageMissing < ActiveRecord::Base   
+          def self.column_names
+            []
+          end
+          
+          cheddargetter_billable_on :customer_code       
+        end           
+      }
+
+      specify { lambda { subject }.should raise_error }
     end
   end
   
