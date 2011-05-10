@@ -12,6 +12,8 @@ module CheddargetterClientRails
     end
     
     def validate_subscription
+       supplement_subscription_fields
+       
        if !skip_cheddargetter && new_record? && !subscription.valid?
          errors.add(:subscription, 'problem')
        end
@@ -56,7 +58,7 @@ module CheddargetterClientRails
       attr_accessor :skip_cheddargetter
       
       validate        :validate_subscription
-      after_create   :create_subscription
+      after_create    :create_subscription
       before_destroy  :destroy_subscription           
     end
 

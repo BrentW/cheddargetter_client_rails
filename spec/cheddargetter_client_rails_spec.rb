@@ -88,13 +88,15 @@ describe "CheddargetterClientRails" do
       TestUser.new  
     }
     
-    before {
-      test_user.should_receive(:validate_subscription)
-    }
-    
     subject { test_user.valid? }
 
     it 'should call validate_subscription' do
+      test_user.should_receive(:validate_subscription)
+      subject
+    end
+    
+    it 'should call supplement_subscription_fields' do
+      test_user.should_receive(:supplement_subscription_fields)
       subject
     end
   end
