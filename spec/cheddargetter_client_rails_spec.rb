@@ -253,12 +253,14 @@ describe "CheddargetterClientRails" do
     subject { user.create_subscription }
     
     context 'when skipping cheddargetter' do
+      before { user.customer_code = 'TEST_CODE' }
       before { user.skip_cheddargetter = true }
       before { user.subscription.should_not_receive(:create) }
       it do subject end
     end
     
     context 'when not skipping cheddargetter' do
+      before { user.customer_code = 'TEST_CODE' }      
       before { user.skip_cheddargetter = false }
       before { user.subscription.should_receive(:create) }
       it do subject end
@@ -267,6 +269,10 @@ describe "CheddargetterClientRails" do
     context 'when subscription customer_code is not set' do
       before { user.customer_code = 'TEST_CODE' }
       it do subject; user.subscription.customerCode.should eq('TEST_CODE') end
+    end
+    
+    context 'when user customer code column is not set' do
+      specify { lambda { subject }.should raise_error }
     end
   end
   

@@ -28,7 +28,9 @@ module CheddargetterClientRails
     end
     
     def create_subscription
-      subscription.customerCode = send(self.class.customer_code_column) if !subscription.customerCode
+      record_customer_code = send(self.class.customer_code_column)
+      raise 'Customer code is not set on record.' if !record_customer_code && !subscription.customerCode
+      subscription.customerCode = record_customer_code if !subscription.customerCode
       subscription.create unless skip_cheddargetter
     end
     
