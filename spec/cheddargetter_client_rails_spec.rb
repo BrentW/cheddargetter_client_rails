@@ -49,6 +49,15 @@ describe "CheddargetterClientRails" do
       
         specify { lambda { subject }.should raise_error(ArgumentError) }
       end 
+      
+      context 'when record does not responsd to customer_code_column' do
+        subject {
+          class NoCustomerCodeUser < ActiveRecord::Base
+            cheddargetter_billable_on :id
+          end
+        }
+        specify { lambda { subject }.should raise_error }
+      end
     end
     
     context 'setting customer_code_column' do

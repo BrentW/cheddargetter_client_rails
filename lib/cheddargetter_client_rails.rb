@@ -41,8 +41,12 @@ module CheddargetterClientRails
       if args.length > 0
         self.customer_code_column = args.shift
         
-        if args.length > 0
-          self.shared_columns = args.shift[:shared_columns]
+        if self.instance_methods.include?(customer_code_column.to_s)        
+          if args.length > 0
+            self.shared_columns = args.shift[:shared_columns]
+          end
+        else
+          raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.")
         end
       else
         raise ArgumentError.new('Must supply customer code column.')
