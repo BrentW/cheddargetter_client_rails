@@ -1,6 +1,7 @@
 = cheddargetter_client_rails
 
-Description goes here.
+All functionality is currently pending.  
+The project's core features are not ready to be used in development.
 
 == Contributing to cheddargetter_client_rails
  
