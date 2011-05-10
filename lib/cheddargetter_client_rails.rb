@@ -10,8 +10,21 @@ module CheddargetterClientRails
     def subscription
       @subscription ||= Subscription.new
     end
+    
+    def validate_subscription
+       if !skip_cheddargetter && new_record? && !subscription.valid?
+         errors.add(:subscription, 'problem')
+       end
+    end
+    
+    def new_record?
+      true
+    end
+    
+    def skip_cheddargetter
+      false
+    end    
   end
-
   
   module ClassMethods
     def cheddargetter_billable_on(*args)
@@ -24,6 +37,8 @@ module CheddargetterClientRails
       else
         raise ArgumentError.new('Must supply customer code column.')
       end
+      
+      validate :validate_subscription      
     end
 
     def customer_code_column
@@ -40,7 +55,7 @@ module CheddargetterClientRails
     
     def shared_columns=(columns)
       @shared_columns = columns
-    end
+    end    
   end
 end
 

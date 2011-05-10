@@ -71,6 +71,25 @@ describe "CheddargetterClientRails" do
       }      
     end
   end
+    
+  describe 'validate' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:test_user) {
+      TestUser.new  
+    }
+    
+    before {
+      test_user.should_receive(:validate_subscription)
+    }
+    
+    subject { test_user.valid? }
+
+    it 'should call validate_subscription' do
+      subject
+    end
+  end
   
   describe 'subscription' do
     let(:user)          { double("TestUser", 
@@ -104,5 +123,44 @@ describe "CheddargetterClientRails" do
     end
   end
   
+  describe 'validate_subscription' do
+    before { load_test_user_class }
+    before { TestUser.stub(:connection).and_return mock(:columns => []) }
+
+    let!(:user) {
+      TestUser.new  
+    }
+
+    let(:subscription) {
+      user.subscription
+    }
+    
+    subject { user.validate_subscription }
+    
+    context 'subscription is valid' do
+      before {
+        user.should_receive(:skip_cheddargetter).and_return false
+        user.should_receive(:new_record?).and_return true
+        subscription.should_receive(:valid?).and_return true         
+      }
+      
+      it "should not add errors" do
+        subject
+        (user.errors.length < 1).should be_true
+      end
+    end
   
+    context 'when subscription is invalid' do
+      before {
+        user.should_receive(:skip_cheddargetter).and_return false
+        user.should_receive(:new_record?).and_return true
+        subscription.should_receive(:valid?).and_return false        
+      }
+
+      it "should add errors" do
+        subject
+        (user.errors.length < 1).should be_false
+      end
+    end
+  end
 end
