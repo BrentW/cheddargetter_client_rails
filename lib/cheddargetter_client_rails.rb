@@ -28,6 +28,7 @@ module CheddargetterClientRails
     end
     
     def create_subscription
+      subscription.customerCode = send(self.class.customer_code_column) if !subscription.customerCode
       subscription.create unless skip_cheddargetter
     end
     
@@ -53,7 +54,7 @@ module CheddargetterClientRails
       attr_accessor :skip_cheddargetter
       
       validate        :validate_subscription
-      before_create   :create_subscription
+      after_create   :create_subscription
       before_destroy  :destroy_subscription           
     end
 

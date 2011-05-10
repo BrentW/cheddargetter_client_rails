@@ -263,6 +263,11 @@ describe "CheddargetterClientRails" do
       before { user.subscription.should_receive(:create) }
       it do subject end
     end
+    
+    context 'when subscription customer_code is not set' do
+      before { user.customer_code = 'TEST_CODE' }
+      it do subject; user.subscription.customerCode.should eq('TEST_CODE') end
+    end
   end
   
   describe 'current_subscription' do
