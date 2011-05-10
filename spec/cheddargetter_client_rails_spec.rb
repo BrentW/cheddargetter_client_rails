@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 
 describe "CheddargetterClientRails" do
-  let (:load_test_user_class) {
+  before {
     class TestUser < ActiveRecord::Base
       attr_accessor :customer_code, :first_name, :last_name, :plan_code
       
@@ -17,8 +17,14 @@ describe "CheddargetterClientRails" do
     end
   }
   
-  let(:test_user_class) {
+  before { TestUser.stub(:connection).and_return mock(:columns => []) }
+  
+  let(:user_class) {
     TestUser
+  }
+  
+  let(:user) {
+    TestUser.new
   }
   
   describe 'module included?' do
@@ -27,9 +33,6 @@ describe "CheddargetterClientRails" do
   end
   
   describe "inclusion of class methods" do
-    before { load_test_user_class }
-    let(:user_class) { TestUser } 
-
     subject { user_class.respond_to?(:cheddargetter_billable_on) }
     
     it { should be_true }
@@ -46,22 +49,15 @@ describe "CheddargetterClientRails" do
       
         specify { lambda { subject }.should raise_error(ArgumentError) }
       end 
-
-      context 'with customer code column' do
-        subject { load_test_user_class }
-        specify { lambda { subject }.should_not raise_error }
-      end
     end
     
     context 'setting customer_code_column' do
-      before { load_test_user_class }
-      subject { test_user_class.customer_code_column }
+      subject { user_class.customer_code_column }
       it { should eq(:customer_code) }
     end
     
     context 'setting shared_columns' do
-      before { load_test_user_class }
-      subject { test_user_class.shared_columns }
+      subject { user_class.shared_columns }
       it { should eq( :firstName    => :first_name, 
                       :lastName     => :last_name, 
                       :ccFirstName  => :first_name, 
@@ -73,9 +69,6 @@ describe "CheddargetterClientRails" do
   end
     
   describe 'validate' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:test_user) {
       TestUser.new  
     }
@@ -92,26 +85,16 @@ describe "CheddargetterClientRails" do
   end
   
   describe 'before_create' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:test_user) {
       TestUser.new  
     }
 
-    
     before  { test_user.should_receive :create_subscription }
     subject { test_user.run_callbacks(:save) }
     it do subject end
   end
   
   describe 'subscription' do
-    let(:user)          { double("TestUser", 
-      :customer_code  => "JOHN_DOE_CODE",
-      :first_name     => "JOHN",
-      :last_name      => "DOE"    
-    )}
-
     let!(:subscription) { # use ! to set it now!
       CheddargetterClientRails::Subscription.new
     }
@@ -138,9 +121,6 @@ describe "CheddargetterClientRails" do
   end
   
   describe 'validate_subscription' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:user) {
       TestUser.new  
     }
@@ -210,9 +190,6 @@ describe "CheddargetterClientRails" do
   end
   
   describe 'supplement_subscription_fields' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:user) {
       TestUser.new  
     }
@@ -243,9 +220,6 @@ describe "CheddargetterClientRails" do
   end
 
   describe 'create_subscription' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:user) {
       TestUser.new  
     }
@@ -266,9 +240,6 @@ describe "CheddargetterClientRails" do
   end
   
   describe 'current_subscription' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:user) {
       TestUser.new  
     }
@@ -289,9 +260,6 @@ describe "CheddargetterClientRails" do
   end
   
   describe 'destroy_subscription' do
-    before { load_test_user_class }
-    before { TestUser.stub(:connection).and_return mock(:columns => []) }
-
     let!(:user) {
       TestUser.new  
     }

@@ -117,10 +117,6 @@ describe CheddargetterClientRails::Subscription do
         before { subscription.email = nil }
         it { should be_false }
       end
-      context 'when customerCode is not set' do
-        before { subscription.customerCode = nil }
-        it { should be_false }
-      end
       context 'when planCode is not set' do
         before { subscription.planCode = nil }
         it { should be_false }
