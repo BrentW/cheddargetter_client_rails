@@ -25,8 +25,8 @@ module CheddargetterClientRails
     validates_presence_of :firstName,
                           :lastName,
                           :email,
-                          :customerCode,
                           :planCode
+                          #:customerCode, generally we call valid before unique identifier is called
 
     validates_presence_of :ccNumber,
                           :ccExpiration,
