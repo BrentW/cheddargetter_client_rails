@@ -63,14 +63,22 @@ describe CheddargetterClientRails::Subscription do
     
     context 'when a subscription already exists' do
       before  { subscription.stub(:new_record?).and_return false }
+      before  { valid_subscription_attributes.each {|attribute, value| subscription.send(attribute.to_s + '=', value )} }      
       before  { subscription.should_receive(:update) }
       it      { subject }
     end
 
     context 'when a subscription already exists' do
       before  { CheddargetterClientRails::Subscription.stub(:new_record?).and_return true }
+      before  { valid_subscription_attributes.each {|attribute, value| subscription.send(attribute.to_s + '=', value )} }
       before  { subscription.should_receive(:create) }
       it      { subject }
+    end
+    
+    context 'when not valid' do
+      before  { CheddargetterClientRails::Subscription.stub(:new_record?).and_return true }
+      
+      specify { subject; (subscription.errors.length > 1).should be_true }
     end    
   end
   
@@ -146,10 +154,6 @@ describe CheddargetterClientRails::Subscription do
       end
       context 'when email is not set' do
         before { subscription.email = nil }
-        it { should be_false }
-      end
-      context 'when customerCode is not set' do
-        before { subscription.customerCode = nil }
         it { should be_false }
       end
       context 'when planCode is not set' do

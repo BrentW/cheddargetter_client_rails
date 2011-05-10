@@ -98,6 +98,8 @@ module CheddargetterClientRails
     end
   
     def save
+      return false if !valid?
+      
       if new_record?
         create
       else
