@@ -1,7 +1,129 @@
 = cheddargetter_client_rails
 
-All functionality is currently pending.  
-The project's core features are not ready to be used in development.
+The CheddarGetter rails client aims to tie the CheddarGetter API closely into ActiveRecord models.  
+Much of the heavy lifting with the api itself is done through the cheddargetter_client_ruby gem.
+
+== Usage
+
+=== In the model
+
+	class User < ActiveRecord::Base
+		cheddargetter_billable_on :customer_code, :shared_columns => {
+		  :email        => :email,
+		  :firstName    => :first_name,
+		  :lastName     => :last_name,
+		  :planCode     => :plan_code
+		}
+ end
+
+The first argument is the unique identifier column that CheddarGetter uses for the customers' customerCode.
+It can be any column as long as it is unique.
+
+The shared columns hash are other attributes that appear both in your records for the user and CheddarGetter's records.  When the save is called on the subscription object it grabs these attributes from your ActiveRecord 
+record.  This is to prevent duplicate form inputs asking the user more than once for the same information.
+
+The planCode shared attribute may also be set as string, as sometimes you want everyone on the same plan.
+
+	class User < ActiveRecord::Base
+		cheddargetter_billable_on :customer_code, :shared_columns => {
+		  :email        => :email,
+		  :firstName    => :first_name,
+		  :lastName     => :last_name,
+		  :planCode     => 'PAID_PLAN'
+		}
+  end
+
+=== In the controller
+
+Make sure the subscription is always set on the user as some data may only exist there.
+
+	class CreditCardsController < ApplicationController
+	  def edit
+	    @user = current_user
+	  end
+
+	  def update
+	    @user = current_user
+
+	    if @user.save_subscription(params[:cheddargetter_client_rails_subscription])
+	      redirect_to edit_credit_card_path, :flash => {:success => 'Billing information updated'}
+	    else     
+	      render 'edit'
+	    end
+	  end
+	end
+
+Or in a user controller
+
+	class UsersController < ApplicationController
+	  def new
+	    @user = User.new
+	  end
+
+	  def create
+	    @user = User.new
+			@user.build_subscription(params[:cheddargetter_client_rails_subscription])
+
+	    if @user.save
+	      redirect_to after_creation_path, :flash => {:success => 'User successfully created'}
+	    else     
+	      render 'new'
+	    end
+	  end
+	end
+
+The user save will take care of saving the subscription to CheddarGetter.
+
+=== In the view
+
+Do something like this, if it is a user form use fields_for @user.subscription inside the user form.
+
+	<%= form_for(@user.subscription, :url => credit_cards_path) do |subscription| %>
+		<fieldset>
+			<%= subscription.hidden_field :planCode, :value => 'FREE_PLAN', :class => 'jq_planCodeValue' %>
+		
+			<dl>
+				<dt>First Name:</dt> 
+				<dd>
+					<%= subscription.text_field :ccFirstName,:autocomplete => "off" %>
+				</dd>
+
+				<dt>Last Name:</dt> 
+				<dd>
+					<%= subscription.text_field :ccLastName, :autocomplete => "off" %>
+				</dd>
+			
+				<dt>Card Number:</dt>
+				<dd>
+					<%= subscription.text_field :ccNumber,:autocomplete => "off" %>
+				</dd>
+				<dt>Expiration Date:</dt>
+				<dd>
+					<%= subscription.text_field :ccExpiration, :autocomplete => 'off' %>
+				</dd>
+				<dt>Address:</dt>
+				<dd>
+					<%= subscription.text_field :ccAddress, :autocomplete => 'off' %>
+				</dd>
+				<dt>City:</dt>
+				<dd>
+					<%= subscription.text_field :ccCity, :autocomplete => 'off' %>
+				</dd>
+				<dt>State:</dt>
+				<dd>
+					<%= subscription.text_field :ccState, :autocomplete => 'off' %>
+				</dd>
+				<dt>Zip Code:</dt>
+				<dd>
+					<%= subscription.text_field :zip, :autocomplete => 'off' %>
+				</dd>
+				<dt>Country:</dt>
+				<dd>
+					<%= subscription.text_field :ccCountry, :autocomplete => 'off' %>
+				</dd>
+		</fieldset>
+	<% end %>
+	
 
 == Contributing to cheddargetter_client_rails
  
