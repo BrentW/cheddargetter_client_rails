@@ -11,6 +11,10 @@ module CheddargetterClientRails
       @subscription ||= Subscription.new
     end
     
+    def subscription=(value)
+      @subscription = value
+    end
+    
     def validate_subscription
        supplement_subscription_fields
        
@@ -61,6 +65,7 @@ module CheddargetterClientRails
         new_subscription.send(key.to_s + '=', value)
       end
       
+      self.subscription = new_subscription
       new_subscription
     end
     

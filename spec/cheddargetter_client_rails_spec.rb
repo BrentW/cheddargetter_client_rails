@@ -399,15 +399,9 @@ describe "CheddargetterClientRails" do
     let(:subscription_params) {
       {:lastName => 'NewLast'}
     }
-    
-    let!(:new_subscription) {
-      CheddargetterClientRails::Subscription.new
-    }
-    
+        
     subject { user.build_subscription(subscription_params) }
-    
-    before { CheddargetterClientRails::Subscription.stub(:new).and_return new_subscription }
-    
+        
     context 'when current subscription' do
       before { user.stub(:current_subscription).and_return(current_subscription) }
       it 'should use data from current subscription' do
