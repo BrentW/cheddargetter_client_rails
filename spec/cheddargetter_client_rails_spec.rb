@@ -451,4 +451,26 @@ describe "CheddargetterClientRails" do
       it { should be_nil }
     end
   end
+  
+  describe 'save_subscription' do
+    let!(:current_subscription) { 
+      CheddargetterClientRails::Subscription.new({:firstName => "First", :lastName => "Last"}) 
+    }    
+        
+    let!(:subscription_params) {
+      {:lastName => 'NewLast'}
+    }
+    
+    let!(:new_subscription) {
+      CheddargetterClientRails::Subscription.new
+    }
+    
+    subject { user.save_subscription(subscription_params) }
+    
+    before { CheddargetterClientRails::Subscription.stub(:new).and_return new_subscription }
+    
+    before { user.should_receive(:build_subscription) }
+    before { user.subscription.should_receive(:save) }
+    it do subject end
+  end
 end

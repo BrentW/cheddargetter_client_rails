@@ -30,12 +30,11 @@ module CheddargetterClientRails
     end
     
     def create_subscription
-      record_customer_code = send(self.class.customer_code_column)
-      raise 'Customer code is not set on record.' if !record_customer_code && !subscription.customerCode
-      subscription.customerCode = record_customer_code if !subscription.customerCode
+      raise ArgumentError, 'Customer code is not set on record.' if !customer_code_column_value && !subscription.customerCode
+      subscription.customerCode = customer_code_column_value if !subscription.customerCode
       subscription.create unless skip_cheddargetter
     end
-    
+        
     def current_subscription
       @current_subscription ||= CheddargetterClientRails::Subscription.get(customer_code_column_value) if customer_code_column_value
     end
@@ -49,6 +48,8 @@ module CheddargetterClientRails
     end
     
     def build_subscription(attributes_hash)
+      # set attributes from current cheddargetter subscription, then
+      # replaces any values with supplied data
       new_subscription = CheddargetterClientRails::Subscription.new
       if old_subscription = current_subscription
         old_subscription.instance_variables_hash.each do |key, value|
@@ -61,6 +62,11 @@ module CheddargetterClientRails
       end
       
       new_subscription
+    end
+    
+    def save_subscription(attributes_hash)
+      build_subscription(attributes_hash)
+      subscription.save
     end
   end
   
