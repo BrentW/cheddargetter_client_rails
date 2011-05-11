@@ -37,11 +37,30 @@ module CheddargetterClientRails
     end
     
     def current_subscription
-      @current_subscription ||= CheddargetterClientRails::Subscription.get(customer_code)
+      @current_subscription ||= CheddargetterClientRails::Subscription.get(customer_code_column_value) if customer_code_column_value
     end
     
     def destroy_subscription
       current_subscription.try(:destroy)
+    end
+
+    def customer_code_column_value
+      send(self.class.send(:customer_code_column)) if self.class.send(:customer_code_column)
+    end
+    
+    def build_subscription(attributes_hash)
+      new_subscription = CheddargetterClientRails::Subscription.new
+      if old_subscription = current_subscription
+        old_subscription.instance_variables_hash.each do |key, value|
+          new_subscription.send(key.to_s + '=', value)
+        end
+      end
+      
+      attributes_hash.each do |key, value|
+        new_subscription.send(key.to_s + '=', value)
+      end
+      
+      new_subscription
     end
   end
   

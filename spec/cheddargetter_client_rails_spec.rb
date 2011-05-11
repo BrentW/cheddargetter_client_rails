@@ -354,24 +354,33 @@ describe "CheddargetterClientRails" do
       TestUser.new  
     }
     
-    let(:subscription) { CheddargetterClientRails::Subscription.new }    
+    let(:subscription) { CheddargetterClientRails::Subscription.new() }
     before { CheddargetterClientRails::Subscription.stub(:get).and_return subscription }
     
-    context 'when it has not been accesssed' do
+    context 'when it does not exist' do
+      before { user.stub(:customer_code_column_value).and_return nil }
       subject { user.current_subscription }
-      it { should eq(subscription) }
+      it { should be_nil }
     end    
 
-    context 'when it has been accesssed' do
-      before { user.current_subscription.firstName = 'First' }
-      subject { user.current_subscription.firstName }
-      it { should eq("First")}
-    end    
+    context 'when it does exist' do
+      before { user.stub(:customer_code_column_value).and_return 'CUSTOMER_CODE' }
+      context 'when it has not been accessed' do
+        subject { user.current_subscription }
+        it { should eq(subscription) }        
+      end
+
+      context 'when it has been accesssed' do
+        before { user.current_subscription.firstName = 'First' }
+        subject { user.current_subscription.firstName }
+        it { should eq("First") }
+      end    
+    end
   end
   
   describe 'destroy_subscription' do
     let!(:user) {
-      TestUser.new  
+      TestUser.new(:customer_code => 'CUSTOMER_CODE')  
     }
     
     let(:subscription) { CheddargetterClientRails::Subscription.new }    
@@ -380,5 +389,66 @@ describe "CheddargetterClientRails" do
     
     subject { user.destroy_subscription }
     it { subject }
+  end
+  
+  describe 'build_subscription' do
+    let!(:current_subscription) { 
+      CheddargetterClientRails::Subscription.new({:firstName => "First", :lastName => "Last"}) 
+    }    
+        
+    let(:subscription_params) {
+      {:lastName => 'NewLast'}
+    }
+    
+    let!(:new_subscription) {
+      CheddargetterClientRails::Subscription.new
+    }
+    
+    subject { user.build_subscription(subscription_params) }
+    
+    before { CheddargetterClientRails::Subscription.stub(:new).and_return new_subscription }
+    
+    context 'when current subscription' do
+      before { user.stub(:current_subscription).and_return(current_subscription) }
+      it 'should use data from current subscription' do
+        subject
+        user.subscription.firstName.should eq("First")
+      end
+      
+      it 'should overwrite data from current_subscription' do
+        subject
+        user.subscription.lastName.should eq("NewLast")
+      end
+    end
+    
+    context 'when no current_subscription' do
+      it 'should use a blank subscription object' do
+        subject
+        user.subscription.firstName.should be_nil
+      end
+      
+      it 'should fill in new data' do
+        subject
+        user.subscription.lastName.should eq("NewLast")
+      end
+    end
+  end
+  
+  describe 'customer_code_column_value' do
+    subject { user.customer_code_column_value }
+    
+    context 'when customer_code_column is set and value is set' do
+      before { user.customer_code = 'Customer Code' }
+      it { should eq('Customer Code') }
+    end
+    
+    context 'when customer_code_column is not set' do
+      before { user.class.stub(:customer_code_column).and_return nil }
+      it { should be_nil }
+    end
+    
+    context 'when value is not set' do
+      it { should be_nil }
+    end
   end
 end

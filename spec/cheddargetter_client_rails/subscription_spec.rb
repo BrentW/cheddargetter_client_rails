@@ -174,4 +174,26 @@ describe CheddargetterClientRails::Subscription do
       end      
     end
   end
+  
+  describe 'instance_variables_hash' do
+    before  { valid_subscription_attributes.each {|attribute, value| subscription.send(attribute.to_s + '=', value )} }
+    before  { 
+      subscription.customerCode = "CUSTOMER_CODE" 
+      subscription.ccFirstName  = "Joe"
+      subscription.ccLastName   = "Collins"
+    }      
+    subject { subscription.instance_variables_hash }
+    it {
+      should eq({
+        :planCode     => 'PAID_PLAN',
+        :firstName    => 'Joe',
+        :lastName     => 'Collins',
+        :ccFirstName    => 'Joe',
+        :ccLastName     => 'Collins',
+        :zip          => '47401',
+        :email        => 'jim@test.com',
+        :customerCode => 'CUSTOMER_CODE'
+      })
+    }
+  end
 end

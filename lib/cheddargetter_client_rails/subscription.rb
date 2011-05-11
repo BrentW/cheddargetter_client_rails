@@ -82,6 +82,7 @@ module CheddargetterClientRails
         new(
           :firstName    => response.customer[:firstName],
           :lastName     => response.customer[:lastName],
+          :email        => response.customer[:email],
           :ccLastFour   => customer_subscription[:ccLastFour], 
           :ccFirstName    => customer_subscription[:ccFirstName],
           :ccLastName     => customer_subscription[:ccLastName],
@@ -167,6 +168,19 @@ module CheddargetterClientRails
       response = CGClient.delete_customer({ :code => customerCode })
     
       add_errors_or_return_valid_response(response)    
+    end
+    
+    def instance_variables_hash
+      {
+        :customerCode => customerCode, 
+        :firstName => firstName,
+        :ccLastName => ccLastName,
+        :ccFirstName => ccFirstName,
+        :planCode => planCode,
+        :zip => zip,
+        :lastName => lastName,
+        :email => email
+      }     
     end
   end
 end
