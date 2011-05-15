@@ -7,31 +7,47 @@ Much of the heavy lifting with the api itself is done through the cheddargetter_
 
 === In the model
 
-	class User < ActiveRecord::Base
-		cheddargetter_billable_on :customer_code, :shared_columns => {
-		  :email        => :email,
-		  :firstName    => :first_name,
-		  :lastName     => :last_name,
-		  :planCode     => :plan_code
-		}
- end
+It can be very simple if you go with the default columns, ie:
 
-The first argument is the unique identifier column that CheddarGetter uses for the customers' customerCode.
-It can be any column as long as it is unique.
+	:customerCode => :id
+  :email        => :email,
+  :firstName    => :first_name,
+  :lastName     => :last_name,
+  :planCode     => :plan_code
 
-The shared columns hash are other attributes that appear both in your records for the user and CheddarGetter's records.  When the save is called on the subscription object it grabs these attributes from your ActiveRecord 
-record.  This is to prevent duplicate form inputs asking the user more than once for the same information.
-
-The planCode shared attribute may also be set as string, as sometimes you want everyone on the same plan.
+Then the declaration in the model is simply:
 
 	class User < ActiveRecord::Base
-		cheddargetter_billable_on :customer_code, :shared_columns => {
-		  :email        => :email,
-		  :firstName    => :first_name,
-		  :lastName     => :last_name,
-		  :planCode     => 'PAID_PLAN'
-		}
+	  has_subscription
   end
+
+These are the only required columns however you can change their names locally very easily.
+
+  class User < ActiveRecord::Base
+    has_subscription :customerCode => :customer_code,
+										:firstName => :name
+										:lastName  => :l_name
+										:email			=> :business_email
+										:planCode   => "FREE_PLAN"
+										
+  end
+
+Note that the plan code can also take a string.
+
+The has_subscription will also takes additional key/values of items that appear both in your records for the user and CheddarGetter's records. For instance zip code is a common one. Here are others:
+
+	:ccFirstName,
+	:ccLastName,
+	:ccExpiration,
+	:ccNumber,
+	:ccCountry,
+	:ccAddress,
+	:ccCity,
+	:ccState,
+	:company,
+	:zip
+
+When the save is called on the subscription object or create is called on the user it grabs all shared attributes from your ActiveRecord record. 
 
 === In the controller
 
@@ -121,6 +137,7 @@ Do something like this, if it is a user form use fields_for @user.subscription i
 				<dd>
 					<%= subscription.text_field :ccCountry, :autocomplete => 'off' %>
 				</dd>
+			</dt
 		</fieldset>
 	<% end %>
 	
