@@ -5,25 +5,23 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe "CheddargetterClientRails" do
   before {
     class TestUser < ActiveRecord::Base
-      attr_accessor :customer_code, :first_name, :last_name, :plan_code
+      attr_accessor :customer_code, :first_name, :last_name, :plan_code, :email
 
       def self.column_names
         []
       end
             
-      cheddargetter_billable_on :customer_code, :shared_columns => {
-                                                  :firstName    => :first_name, 
-                                                  :lastName     => :last_name, 
-                                                  :ccFirstName  => :first_name, 
-                                                  :ccLastName   => :last_name, 
-                                                  :planCode     => :plan_code
-                                                }
-
-
+      cheddargetter_billable_on :customerCode => :customer_code,
+                                :firstName    => :first_name, 
+                                :lastName     => :last_name, 
+                                :ccFirstName  => :first_name, 
+                                :ccLastName   => :last_name, 
+                                :planCode     => :plan_code
+                                              
     end
   }
   
-  before { TestUser.stub(:connection).and_return mock(:columns => []) }
+  before { ActiveRecord::Base.stub(:connection).and_return mock(:columns => []) }
   
   let(:user_class) {
     TestUser
@@ -51,6 +49,8 @@ describe "CheddargetterClientRails" do
           class NoCustomerCodeUser < ActiveRecord::Base
             cheddargetter_billable_on
           end
+          NoCustomerCodeUser.stub(:connection).and_return mock(:columns => [])
+          
         }
       
         specify { lambda { subject }.should raise_error(ArgumentError) }
@@ -66,6 +66,27 @@ describe "CheddargetterClientRails" do
       end
     end
     
+    context 'setting default values' do
+      subject { 
+        class DefaultValuesUser < ActiveRecord::Base
+          attr_accessor :id, :email, :first_name, :last_name, :plan_code
+          
+          cheddargetter_billable_on
+        end
+      }
+      
+      specify { lambda { subject }.should_not raise_error }
+      specify { 
+        subject;
+        DefaultValuesUser.shared_columns.should eq({
+          :email => :email, 
+          :firstName => :first_name, 
+          :lastName => :last_name, 
+          :planCode => :plan_code
+        })
+      }
+    end
+    
     context 'setting customer_code_column' do
       subject { user_class.customer_code_column }
       it { should eq(:customer_code) }
@@ -77,7 +98,8 @@ describe "CheddargetterClientRails" do
                       :lastName     => :last_name, 
                       :ccFirstName  => :first_name, 
                       :ccLastName   => :last_name, 
-                      :planCode     => :plan_code
+                      :planCode     => :plan_code,
+                      :email        => :email
                     ) 
       }      
     end
@@ -214,7 +236,7 @@ describe "CheddargetterClientRails" do
             ['customer_code']
           end
           
-          cheddargetter_billable_on :customer_code
+          cheddargetter_billable_on :customerCode => :customer_code
         end                    
       }
       
@@ -242,7 +264,7 @@ describe "CheddargetterClientRails" do
           
           p 'Make not that if method and not column, then it must be declared before cheddargetter_billable_on'
                     
-          cheddargetter_billable_on :customer_code
+          cheddargetter_billable_on :customerCode => :customer_code
         end        
       }
       

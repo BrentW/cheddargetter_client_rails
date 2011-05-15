@@ -79,14 +79,21 @@ module CheddargetterClientRails
   end
   
   module ClassMethods
-    def cheddargetter_billable_on(*args)
-      raise ArgumentError.new('Must supply customer code column.') if args.length < 1
-      self.customer_code_column = args.shift
+    def cheddargetter_billable_on(args = {})
+      self.customer_code_column = args.delete(:customerCode) || :id
       raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !responds_to_customer_code_column?        
       
-      if args.length > 0
-        self.shared_columns = args.shift[:shared_columns]
+      shared = {}
+      shared[:email]      = args.delete(:email)      || :email
+      shared[:firstName]  = args.delete(:firstName)  || :first_name
+      shared[:lastName]   = args.delete(:lastName)   || :last_name
+      shared[:planCode]   = args.delete(:planCode)   || :plan_code
+      
+      args.each do |key, value|
+        shared[key] = value
       end
+      
+      self.shared_columns = shared
       
       attr_accessor :skip_cheddargetter
       
