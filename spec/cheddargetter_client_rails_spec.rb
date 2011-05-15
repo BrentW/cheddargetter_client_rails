@@ -11,7 +11,7 @@ describe "CheddargetterClientRails" do
         []
       end
             
-      cheddargetter_billable_on :customerCode => :customer_code,
+      has_subscription :customerCode => :customer_code,
                                 :firstName    => :first_name, 
                                 :lastName     => :last_name, 
                                 :ccFirstName  => :first_name, 
@@ -37,17 +37,17 @@ describe "CheddargetterClientRails" do
   end
   
   describe "inclusion of class methods" do
-    subject { user_class.respond_to?(:cheddargetter_billable_on) }
+    subject { user_class.respond_to?(:has_subscription) }
     
     it { should be_true }
   end
   
-  describe 'cheddargetter_billable_on' do
+  describe 'has_subscription' do
     context 'argument errors' do
       context 'without customer code column' do
         subject {
           class NoCustomerCodeUser < ActiveRecord::Base
-            cheddargetter_billable_on
+            has_subscription
           end
           NoCustomerCodeUser.stub(:connection).and_return mock(:columns => [])
           
@@ -59,7 +59,7 @@ describe "CheddargetterClientRails" do
       context 'when record does not responsd to customer_code_column' do
         subject {
           class NoCustomerCodeUser < ActiveRecord::Base
-            cheddargetter_billable_on :id
+            has_subscription :id
           end
         }
         specify { lambda { subject }.should raise_error }
@@ -71,7 +71,7 @@ describe "CheddargetterClientRails" do
         class DefaultValuesUser < ActiveRecord::Base
           attr_accessor :id, :email, :first_name, :last_name, :plan_code
           
-          cheddargetter_billable_on
+          has_subscription
         end
       }
       
@@ -236,7 +236,7 @@ describe "CheddargetterClientRails" do
             ['customer_code']
           end
           
-          cheddargetter_billable_on :customerCode => :customer_code
+          has_subscription :customerCode => :customer_code
         end                    
       }
       
@@ -262,9 +262,9 @@ describe "CheddargetterClientRails" do
             'TEST_CODE'
           end
           
-          p 'Make not that if method and not column, then it must be declared before cheddargetter_billable_on'
+          p 'Make not that if method and not column, then it must be declared before has_subscription'
                     
-          cheddargetter_billable_on :customerCode => :customer_code
+          has_subscription :customerCode => :customer_code
         end        
       }
       
@@ -285,7 +285,7 @@ describe "CheddargetterClientRails" do
             []
           end
           
-          cheddargetter_billable_on :customer_code       
+          has_subscription :customer_code       
         end           
       }
 

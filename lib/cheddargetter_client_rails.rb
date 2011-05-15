@@ -79,7 +79,7 @@ module CheddargetterClientRails
   end
   
   module ClassMethods
-    def cheddargetter_billable_on(args = {})
+    def has_subscription(args = {})
       self.customer_code_column = args.delete(:customerCode) || :id
       raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !responds_to_customer_code_column?        
       
