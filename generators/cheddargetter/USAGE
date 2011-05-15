@@ -5,7 +5,7 @@ Description:
     your CheddarGetter account credentials.
 
 Examples:
-    script/generate cheddargetter
+    rails generate cheddargetter
 
         Config: config/cheddargetter.yml
         Initializer: config/initializers/cheddargetter_client.rb
