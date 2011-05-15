@@ -182,5 +182,9 @@ module CheddargetterClientRails
         :email => email
       }     
     end
+    
+    def to_key
+      'edit'
+    end
   end
 end

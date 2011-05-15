@@ -196,4 +196,9 @@ describe CheddargetterClientRails::Subscription do
       })
     }
   end
+  
+  describe 'to_key' do
+    subject { subscription.to_key }
+    it { should eq("edit") }
+  end
 end
