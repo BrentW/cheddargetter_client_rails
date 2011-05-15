@@ -7,3 +7,4 @@ class CheddargetterGenerator < Rails::Generator::Base
       m.file "cheddargetter.yml", "config/cheddargetter.yml"
     end
   end
+end
