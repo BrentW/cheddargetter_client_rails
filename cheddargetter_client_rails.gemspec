@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{cheddargetter_client_rails}
-  s.version = "0.1.8"
+  s.version = "0.1.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brent Wooden"]
-  s.date = %q{2011-05-11}
+  s.date = %q{2011-05-15}
   s.description = %q{Integrates CheddarGetter api with Active Record. Uses cheddargetter_client_ruby.}
   s.email = %q{brent.wooden@gmail.com}
   s.extra_rdoc_files = [
@@ -31,9 +31,16 @@ Gem::Specification.new do |s|
     "features/support/env.rb",
     "lib/cheddargetter_client_rails.rb",
     "lib/cheddargetter_client_rails/subscription.rb",
+    "lib/generators/cheddargetter/USAGE",
+    "lib/generators/cheddargetter/cheddargetter_generator.rb",
+    "lib/generators/cheddargetter/templates/cheddargetter.yml",
+    "lib/generators/cheddargetter/templates/cheddargetter_client.rb",
+    "lib/rails/record_identifier.rb",
     "spec/cheddargetter_client_rails/subscription_spec.rb",
     "spec/cheddargetter_client_rails_spec.rb",
     "spec/fixtures/users.yml",
+    "spec/generator_spec.rb",
+    "spec/record_identifier_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/BrentW/cheddargetter_client_rails}
