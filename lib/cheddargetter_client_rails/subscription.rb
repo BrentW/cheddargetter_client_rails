@@ -184,7 +184,7 @@ module CheddargetterClientRails
     end
     
     def to_key
-      'edit'
+      ['edit', '_']
     end
   end
 end
