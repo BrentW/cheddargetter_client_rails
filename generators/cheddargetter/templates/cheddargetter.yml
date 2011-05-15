@@ -1,0 +1,12 @@
+development: &development
+    username: youremail@example.com
+    password: youraccountpassword
+    product_code: YOUR_DEVELOPMENT_PRODUCT_CODE
+
+test:
+    <<: *development
+    product_code: YOUR_TEST_PRODUCT_CODE
+
+production:
+    <<: *development
+    product_code: YOUR_PRODUCTION_PRODUCT_CODE

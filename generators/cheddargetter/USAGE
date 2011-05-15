@@ -1,0 +1,11 @@
+Description:
+    The cheddargetter generator creates YAML file in your config
+    directory and an initializer to load this config. The config has a
+    separate section for each environment. Please fill in the YAML with
+    your CheddarGetter account credentials.
+
+Examples:
+    script/generate cheddargetter
+
+        Config: config/cheddargetter.yml
+        Initializer: config/initializers/cheddargetter_client.rb
