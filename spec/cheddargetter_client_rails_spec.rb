@@ -436,6 +436,11 @@ describe "CheddargetterClientRails" do
       it { should eq('Customer Code') }
     end
     
+    context 'when the customer_code_column is set and it is an integeter' do
+      before { user.customer_code = 12345 }
+      it { should eq('12345') }
+    end
+    
     context 'when customer_code_column is not set' do
       before { user.class.stub(:customer_code_column).and_return nil }
       it { should be_nil }

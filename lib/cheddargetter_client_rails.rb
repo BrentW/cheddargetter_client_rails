@@ -48,7 +48,10 @@ module CheddargetterClientRails
     end
 
     def customer_code_column_value
-      send(self.class.send(:customer_code_column)) if self.class.send(:customer_code_column)
+      if self.class.send(:customer_code_column)
+        value = send(self.class.send(:customer_code_column))
+        value.to_s if value.try(:to_s).present?
+      end 
     end
     
     def build_subscription(attributes_hash)
