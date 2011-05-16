@@ -38,6 +38,8 @@ module CheddargetterClientRails
           subscription.send(subscription_column.to_s + '=', send(user_attribute))
         end
       end
+      
+      subscription.customerCode = customer_code_column_value if customer_code_column_value.present?
     end
     
     def create_subscription

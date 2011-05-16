@@ -363,13 +363,17 @@ describe "CheddargetterClientRails" do
       }
 
       subject { user.supplement_subscription_fields }
-      subject { user.supplement_subscription_fields }
       specify { 
         subject
         user.subscription.firstName.should == "First"
         user.subscription.lastName.should == "Last"
         user.subscription.planCode.should == "TEST_PLAN"
       }
+      
+      context 'will add customer_code_column if present' do
+        before { user.customer_code = 'YYYY' }
+        specify { subject; user.subscription.customerCode.should eq("YYYY")}
+      end
     end
   end
 
