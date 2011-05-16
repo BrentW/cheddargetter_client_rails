@@ -2,6 +2,7 @@ require 'active_support'
 require 'action_controller/record_identifier'
 require 'cheddargetter_client_ruby'
 require 'rails/record_identifier'
+require 'rails/naming'
 
 module CheddargetterClientRails
   autoload :Subscription, 'cheddargetter_client_rails/subscription'
