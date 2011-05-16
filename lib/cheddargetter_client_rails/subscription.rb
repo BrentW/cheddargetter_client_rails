@@ -182,9 +182,6 @@ module CheddargetterClientRails
         :email => email
       }     
     end
-    
-    def to_key
-      ['edit', '_']
-    end
+
   end
 end
