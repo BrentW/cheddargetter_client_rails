@@ -338,6 +338,39 @@ describe "CheddargetterClientRails" do
         user.subscription.planCode.should == "EVERYBODYS_PLAN"
       }
     end
+    
+    context 'when subscription is a ActiveSupport::HashWithIndifferentAccess' do
+      let!(:user) {
+        TestUser.new  
+      }
+      
+      before { user.subscription = ActiveSupport::HashWithIndifferentAccess.new }
+
+      before { user.class.stub(:shared_columns).and_return({
+                                                  :firstName    => :first_name, 
+                                                  :lastName     => :last_name, 
+                                                  :ccFirstName  => :first_name, 
+                                                  :ccLastName   => :last_name, 
+                                                  :planCode     => :plan_code
+                                                })
+      }
+
+      before {
+        user.customer_code  = "FIRST_NAME" 
+        user.first_name     = "First"
+        user.last_name      = "Last"
+        user.plan_code      = "TEST_PLAN"
+      }
+
+      subject { user.supplement_subscription_fields }
+      subject { user.supplement_subscription_fields }
+      specify { 
+        subject
+        user.subscription.firstName.should == "First"
+        user.subscription.lastName.should == "Last"
+        user.subscription.planCode.should == "TEST_PLAN"
+      }
+    end
   end
 
   describe 'create_subscription' do
