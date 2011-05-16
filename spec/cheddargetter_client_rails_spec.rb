@@ -369,11 +369,6 @@ describe "CheddargetterClientRails" do
         user.subscription.lastName.should == "Last"
         user.subscription.planCode.should == "TEST_PLAN"
       }
-      
-      context 'will add customer_code_column if present' do
-        before { user.customer_code = 'YYYY' }
-        specify { subject; user.subscription.customerCode.should eq("YYYY")}
-      end
     end
   end
 
@@ -543,6 +538,7 @@ describe "CheddargetterClientRails" do
     
     context 'when user is not a new record' do
       before { user.stub(:new_record?).and_return(false) }
+      before { user.customer_code = 'coooode' }
       
       context 'and shared_attributes have not changed' do
         before { user.stub(:shared_attributes_have_changed?).and_return false }
@@ -556,13 +552,13 @@ describe "CheddargetterClientRails" do
         
         context 'but subscription fields are not present' do
           before { user.subscription.stub(:fields_present?).and_return false }
-          before { user.subscription.should_receive(:save) }        
+          before { user.subscription.should_receive(:update) }        
           it do subject end          
         end
     
         context 'and attributes have changed and subscription fields are present' do
           before { user.subscription.stub(:fields_present?).and_return true }
-          before { user.subscription.should_receive(:save) }        
+          before { user.subscription.should_receive(:update) }        
           it do subject end
         end
       end

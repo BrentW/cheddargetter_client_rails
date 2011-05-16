@@ -30,7 +30,7 @@ module CheddargetterClientRails
       if subscription.is_a?(ActiveSupport::HashWithIndifferentAccess)
         self.subscription = CheddargetterClientRails::Subscription.new(subscription)
       end
-Rails.logger.debug('shared: ' + self.class.shared_columns.inspect)
+
       self.class.shared_columns.each do |subscription_column, user_attribute|
         if(subscription_column == :planCode && user_attribute.is_a?(String)) #user can specify planCode as a string
           subscription.send(subscription_column.to_s + '=', user_attribute)
@@ -38,10 +38,6 @@ Rails.logger.debug('shared: ' + self.class.shared_columns.inspect)
           subscription.send(subscription_column.to_s + '=', send(user_attribute))
         end
       end
-      Rails.logger.debug('subscpriptoin: ' + subscription.inspect)
-      Rails.logger.debug('customer_code: ' + customer_code_column_value.inspect)
-
-      subscription.customerCode = customer_code_column_value if customer_code_column_value.present?
     end
     
     def create_subscription
@@ -90,8 +86,9 @@ Rails.logger.debug('shared: ' + self.class.shared_columns.inspect)
     
     def update_subscription
       if !new_record?
+        subscription.customerCode = customer_code_column_value if subscription.customerCode.blank? and customer_code_column_value.present?
         if shared_attributes_have_changed? || subscription.fields_present?
-          subscription.save
+          subscription.update
         end
       end
     end
