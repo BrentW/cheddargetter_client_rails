@@ -1,7 +1,27 @@
 require 'spec_helper'
 
 describe CheddargetterClientRails::Subscription do
-  let(:user)          { double("TestUser") }
+  before {
+    class TestUser < ActiveRecord::Base
+      attr_accessor :customer_code, :first_name, :last_name, :plan_code, :email
+
+      def self.column_names
+        []
+      end
+            
+      has_subscription :customerCode => :customer_code,
+                                :firstName    => :first_name, 
+                                :lastName     => :last_name, 
+                                :ccFirstName  => :first_name, 
+                                :ccLastName   => :last_name, 
+                                :planCode     => :plan_code
+                                              
+    end
+  }
+  
+  before { ActiveRecord::Base.stub(:connection).and_return mock(:columns => []) }
+  
+  let(:user)          { TestUser.new }
   let(:subscription)  { CheddargetterClientRails::Subscription.new }
   let(:customer_code) { 'JOHN_DOE' }
 
@@ -199,6 +219,24 @@ describe CheddargetterClientRails::Subscription do
   
   describe 'to_key' do
     subject { subscription.to_key }
-    it { should eq("edit") }
+    it { should eq(nil) }
+  end
+  
+  describe 'subscription_fields_present?' do
+    subject { user.subscription.fields_present? }
+    
+    context 'when they are not present' do
+      it { should be_false }
+    end
+    
+    context 'when one is and it is nil' do
+      before { user.subscription.firstName = nil }
+      it { should be_false }
+    end
+    
+    context 'when is and it is not nil' do
+      before { user.subscription.firstName = 'Joe' }
+      it { should be_true }
+    end
   end
 end

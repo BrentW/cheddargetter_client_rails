@@ -83,6 +83,20 @@ module CheddargetterClientRails
       build_subscription(attributes_hash)
       subscription.save
     end
+    
+    def update_subscription
+      if !new_record?
+        if shared_attributes_have_changed? || subscription.fields_present?
+          subscription.save
+        end
+      end
+    end
+    
+    def shared_attributes_have_changed?
+      self.class.shared_columns.collect do |cgkey, column|
+        self.send(column.to_s + '_changed?')
+      end.include?(true)      
+    end
   end
   
   module ClassMethods
@@ -106,7 +120,8 @@ module CheddargetterClientRails
       
       validate        :validate_subscription
       after_create    :create_subscription
-      before_destroy  :destroy_subscription           
+      before_destroy  :destroy_subscription
+      after_save      :update_subscription            
     end
 
     def responds_to_customer_code_column?

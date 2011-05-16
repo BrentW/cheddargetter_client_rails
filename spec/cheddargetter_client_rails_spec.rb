@@ -527,4 +527,59 @@ describe "CheddargetterClientRails" do
     before { user.subscription.should_receive(:save) }
     it do subject end
   end
+  
+  describe 'update_subscription' do
+    subject { user.update_subscription }
+    
+    context 'when user is a new record' do
+      before { user.stub(:new_record?).and_return(true) }
+      before { user.subscription.should_not_receive(:save) }
+      it do subject end      
+    end
+    
+    context 'when user is not a new record' do
+      before { user.stub(:new_record?).and_return(false) }
+      
+      context 'and shared_attributes have not changed' do
+        before { user.stub(:shared_attributes_have_changed?).and_return false }
+        before { user.subscription.stub(:fields_present?).and_return false }
+        before { user.subscription.should_not_receive(:save) }        
+        it do subject end        
+      end
+    
+      context 'and shared_attributes have changed' do        
+        before { user.stub(:shared_attributes_have_changed?).and_return true }
+        
+        context 'but subscription fields are not present' do
+          before { user.subscription.stub(:fields_present?).and_return false }
+          before { user.subscription.should_receive(:save) }        
+          it do subject end          
+        end
+    
+        context 'and attributes have changed and subscription fields are present' do
+          before { user.subscription.stub(:fields_present?).and_return true }
+          before { user.subscription.should_receive(:save) }        
+          it do subject end
+        end
+      end
+    end
+  end
+  
+  describe 'shared_attributes_have_changed?' do
+    subject { user.shared_attributes_have_changed? }
+    before { 
+      user.class.shared_columns.each do |cgkey, attribute|
+        user.stub((attribute.to_s + '_changed?').to_sym).and_return false
+      end 
+    }
+    
+    context 'when attributes have not changed' do
+      it { should be_false }
+    end
+    
+    context 'when an attribute has changed' do
+      before { user.stub((user.class.shared_columns.first[1]).to_s + '_changed?').and_return true }
+      it { should be_true }
+    end
+  end
 end

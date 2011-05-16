@@ -4,6 +4,25 @@ module CheddargetterClientRails
 
     Months = ("01".."12").freeze
     Years  = (Date.current.year..Date.current.year+10).collect{|y| y.to_s }.freeze
+    CGKeys =  [   
+      :planCode,
+      :company,
+      :firstName,
+      :lastName,
+      :ccFirstName,
+      :ccLastName,
+      :ccExpiration,
+      :ccNumber,
+      :ccLastFour,
+      :ccCountry,
+      :ccAddress,
+      :ccCity,
+      :ccState,
+      :customerCode,
+      :email,
+      :zip    
+    ]
+  
   
     attr_accessor :planCode,
                   :company,
@@ -185,6 +204,13 @@ module CheddargetterClientRails
     
     def to_key
       nil
+    end
+    
+    def fields_present?
+      CGKeys.collect do |key|
+        val = send(key)
+        val if val.present?
+      end.compact.present?
     end
   end
 end
