@@ -11,7 +11,7 @@ module CheddargetterClientRails
     base.extend ClassMethods
     
     def subscription
-      @subscription ||= Subscription.new
+      @subscription ||= CheddargetterClientRails::Subscription.new
     end
     
     def subscription=(value)
