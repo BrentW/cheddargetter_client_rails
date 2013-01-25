@@ -49,19 +49,11 @@ module CheddargetterClientRails
 
     validates_presence_of :ccNumber,
                           :ccExpiration,
-                          :zip, :if => :paid_plan?
+                          :zip
 
     validate :unexpired
   
     validate :validates_presence_of_humanized
-  
-    def paid_plan?
-      !free_plan?
-    end
-  
-    def free_plan?
-      planCode == 'FREE_PLAN'
-    end
   
     def unexpired
       if ccExpiration.present?
@@ -86,7 +78,7 @@ module CheddargetterClientRails
     end
   
     def self.get(customer_code)
-      response = CGClient.get_customer(:code => customer_code)
+      response = CGClient.customers_get(:customer_code => customer_code)
 
       if response.errors.blank?
         build_from_response(response)
@@ -114,7 +106,7 @@ module CheddargetterClientRails
     end
   
     def new_record?
-      !Subscription.get(customerCode)
+      !Subscription.customers_get({:customer_code =>customerCode})
     end
   
     def save
@@ -128,8 +120,8 @@ module CheddargetterClientRails
     end
   
     def create
-      response = CGClient.new_customer(
-        :code      => customerCode,
+      response = CGClient.customers_new(
+        :customer_code      => customerCode,
         :firstName => firstName,
         :lastName  => lastName,
         :email     => email,
@@ -162,8 +154,8 @@ module CheddargetterClientRails
     end
 
     def update
-      response = CGClient.edit_customer(
-        {:code      => customerCode},
+      response = CGClient.customers_edit(
+        {:customer_code      => customerCode},
         {
           :firstName => firstName,
           :lastName  => lastName,
@@ -184,7 +176,7 @@ module CheddargetterClientRails
   
     def destroy
       raise "Invalid customer code" if customerCode.blank?
-      response = CGClient.delete_customer({ :code => customerCode })
+      response = CGClient.customers_delete({ :code => customerCode })
     
       add_errors_or_return_valid_response(response)    
     end

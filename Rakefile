@@ -21,6 +21,8 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Integrates CheddarGetter api with Active Record. Uses cheddargetter_client_ruby.}
   gem.email = "brent.wooden@gmail.com"
   gem.authors = ["Brent Wooden"]
+
+  gem.add_dependency "cheddargetter_client", ">= 0.0.2"
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
