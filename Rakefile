@@ -23,6 +23,8 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Brent Wooden"]
 
   gem.add_dependency "cheddargetter_client", ">= 0.0.2"
+  gem.add_dependency 'country_select', '>= 1.1.3'
+
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new

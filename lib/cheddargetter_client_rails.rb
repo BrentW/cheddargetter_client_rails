@@ -118,6 +118,7 @@ module CheddargetterClientRails
       self.shared_columns = shared
       
       attr_accessor :skip_cheddargetter
+      attr_accessible :subscription
       
       validate        :validate_subscription
       after_create    :create_subscription
