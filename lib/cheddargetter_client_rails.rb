@@ -1,7 +1,5 @@
 require 'active_support'
-#require 'action_controller/record_identifier'
 require 'cheddargetter_client'
-#require 'rails/record_identifier'
 require 'rails/naming'
 
 module CheddargetterClientRails
