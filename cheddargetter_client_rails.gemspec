@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "cheddargetter_client_rails"
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brent Wooden"]
-  s.date = "2013-01-25"
+  s.date = "2013-01-28"
   s.description = "Integrates CheddarGetter api with Active Record. Uses cheddargetter_client_ruby."
   s.email = "brent.wooden@gmail.com"
   s.extra_rdoc_files = [
@@ -36,13 +36,11 @@ Gem::Specification.new do |s|
     "lib/generators/cheddargetter/templates/cheddargetter.yml",
     "lib/generators/cheddargetter/templates/cheddargetter_client.rb",
     "lib/rails/naming.rb",
-    "lib/rails/record_identifier.rb",
     "spec/cheddargetter_client_rails/subscription_spec.rb",
     "spec/cheddargetter_client_rails_spec.rb",
     "spec/fixtures/users.yml",
     "spec/generator_spec.rb",
     "spec/naming_spec.rb",
-    "spec/record_identifier_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = "http://github.com/BrentW/cheddargetter_client_rails"
@@ -57,28 +55,34 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3.5"])
       s.add_runtime_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+      s.add_runtime_dependency(%q<country_select>, [">= 1.1.3"])
+      s.add_development_dependency(%q<debugger>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_runtime_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+      s.add_runtime_dependency(%q<country_select>, [">= 1.1.3"])
     else
       s.add_dependency(%q<activesupport>, [">= 2.3.5"])
       s.add_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+      s.add_dependency(%q<country_select>, [">= 1.1.3"])
+      s.add_dependency(%q<debugger>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+      s.add_dependency(%q<country_select>, [">= 1.1.3"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 2.3.5"])
     s.add_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+    s.add_dependency(%q<country_select>, [">= 1.1.3"])
+    s.add_dependency(%q<debugger>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<cheddargetter_client>, [">= 0.0.2"])
+    s.add_dependency(%q<country_select>, [">= 1.1.3"])
   end
 end
 
