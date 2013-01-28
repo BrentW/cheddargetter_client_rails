@@ -231,15 +231,15 @@ module CheddargetterClientRails
     end
 
     def expiration_in_valid_format?
-      ccExpiration.match(/^\d\d\/\d\d\d\d$/)
+      ccExpiration.match(/^\d\d\/\d\d\d\d$/) if ccExpiration
     end
 
     def expiration_in_valid_month_format?
-      ccExpiration.match(/^\d\d\/$/)
+      ccExpiration.match(/^\d\d\/$/) if ccExpiration
     end
 
     def expiration_in_valid_year_format?
-      ccExpiration.match(/^\/\d\d\d\d$/)
+      ccExpiration.match(/^\/\d\d\d\d$/) if ccExpiration
     end
   end
 end

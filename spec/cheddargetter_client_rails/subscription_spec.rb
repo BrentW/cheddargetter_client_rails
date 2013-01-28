@@ -344,6 +344,11 @@ describe CheddargetterClientRails::Subscription do
         before { user.subscription.ccExpiration = ""}
         it { should be_false }
       end
+
+      context 'when nil' do
+        before { user.subscription.ccExpiration = nil }
+        it { should be_false }
+      end
     end
 
   end
@@ -371,6 +376,11 @@ describe CheddargetterClientRails::Subscription do
         before { user.subscription.ccExpiration = '44/4444'}
         it { should be_false }
       end
+
+      context 'when nil' do
+        before { user.subscription.ccExpiration = nil }
+        it { should be_false }
+      end
     end
   end
 
@@ -395,6 +405,11 @@ describe CheddargetterClientRails::Subscription do
 
       context 'with full date' do
         before { user.subscription.ccExpiration = '44/4444'}
+        it { should be_false }
+      end
+
+      context 'when nil' do
+        before { user.subscription.ccExpiration = nil }
         it { should be_false }
       end
     end
