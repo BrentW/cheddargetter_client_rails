@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
+require 'rubygems'
 require 'rspec'
 require 'active_record'
 require 'cheddargetter_client_rails'
@@ -9,7 +10,7 @@ CGEmail       = "michael@expectedbehavior.com"
 CGProductCode = 'GEM_TEST'
 CGPassword    = "DROlOAeQpWey6J2cqTyEzH"
 CGFreePlanId  = "a6a816c8-6d14-11e0-bcd4-40406799fa1e"
-CGClient      = CheddarGetter::Client.new(:product_code => CGProductCode,
+CGClient      = Cheddargetter::Client.new(:product_code => CGProductCode,
                                :username => CGEmail,
                                :password => CGPassword)
                                
@@ -24,5 +25,5 @@ RSpec.configure do |config|
 end
 
 def stub_cheddargetter
-  CheddarGetter::Client.stub(:new).and_return CGClient
+  Cheddargetter::Client.stub(:new).and_return CGClient
 end

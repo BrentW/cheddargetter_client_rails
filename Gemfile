@@ -4,8 +4,8 @@ source "http://rubygems.org"
   gem 'country_select', '>= 1.1.3'
 
 group :development do
+  gem 'debugger'
   gem "rspec"
   gem "bundler"
   gem "jeweler"
-  gem "rcov"
 end

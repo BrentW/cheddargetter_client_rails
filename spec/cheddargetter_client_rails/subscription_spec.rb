@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe CheddargetterClientRails::Subscription do
+  before { ActiveRecord::Base.stub(:connection).and_return mock(:columns => [], :table_exists? => 'true') }
+
   before {
     class TestUser < ActiveRecord::Base
       attr_accessor :customer_code, :first_name, :last_name, :plan_code, :email
@@ -19,7 +21,6 @@ describe CheddargetterClientRails::Subscription do
     end
   }
   
-  before { ActiveRecord::Base.stub(:connection).and_return mock(:columns => []) }
   
   let(:user)          { TestUser.new }
   let(:subscription)  { CheddargetterClientRails::Subscription.new }
@@ -47,7 +48,7 @@ describe CheddargetterClientRails::Subscription do
     before  { 
       subscription.stub(:add_errors_or_return_valid_response).and_return true
       subscription.should_receive(:add_errors_or_return_valid_response)    
-      CGClient.should_receive(:new_customer) 
+      CGClient.should_receive(:customers_new) 
     }
     
     it      { subject }
@@ -58,7 +59,7 @@ describe CheddargetterClientRails::Subscription do
     before  { 
       subscription.stub(:add_errors_or_return_valid_response).and_return true      
       subscription.should_receive(:add_errors_or_return_valid_response) 
-      CGClient.should_receive(:edit_customer)
+      CGClient.should_receive(:customers_edit)
     }
     
     it      { subject }
@@ -237,6 +238,165 @@ describe CheddargetterClientRails::Subscription do
     context 'when is and it is not nil' do
       before { user.subscription.firstName = 'Joe' }
       it { should be_true }
+    end
+  end
+
+  describe 'ccExpirationMonth=(month)' do
+    let(:month) { '44' }
+    subject { user.subscription.ccExpiration }
+
+    context "when there is a value in ccExpiration" do
+      context 'when it is already in valid MM/YYYY format' do
+        before { user.subscription.ccExpiration = "44/4444"}
+        before { user.subscription.ccExpirationMonth = month }
+        it { should eq('44/4444')}
+      end
+
+      context 'when it is /YYYY format' do
+        before { user.subscription.ccExpiration = "/4444"}
+        before { user.subscription.ccExpirationMonth = month }
+        it { should eq('44/4444')}
+      end
+
+      context 'when it is in an odd format' do
+        before { user.subscription.ccExpiration = "ase"}
+        before { user.subscription.ccExpirationMonth = month }
+        it { should eq('44/')}        
+      end
+
+      context 'when it is already in valid month format' do
+        before { user.subscription.ccExpiration = "33/"}
+        before { user.subscription.ccExpirationMonth = month }
+        it { should eq('44/')}        
+      end
+    end
+
+    context 'when there is not a value in ccExpiration' do
+      before { user.subscription.ccExpiration = ""}
+      before { user.subscription.ccExpirationMonth = month }
+      it { should eq('44/')}      
+    end
+  end
+
+  describe'ccExpirationYear=(year)' do
+    let(:year) { '4444' }
+    subject { user.subscription.ccExpiration }
+
+    context "when there is a value in ccExpiration" do
+      context 'when it is already in valid MM/YYYY format' do
+        before { user.subscription.ccExpiration = "44/4444"}
+        before { user.subscription.ccExpirationYear = year }
+        it { should eq('44/4444')}
+      end
+
+      context 'when it is in MM/ format' do
+        before { user.subscription.ccExpiration = "44/"}
+        before { user.subscription.ccExpirationYear = year }
+        it { should eq('44/4444')}
+      end
+
+      context 'when it is in an odd format' do
+        before { user.subscription.ccExpiration = "ase"}
+        before { user.subscription.ccExpirationYear = year }
+        it { should eq('/4444')}        
+      end
+
+      context 'when it is already in valid year format' do
+        before { user.subscription.ccExpiration = "/4444"}
+        before { user.subscription.ccExpirationYear = year }
+        it { should eq('/4444')}        
+      end
+    end
+
+    context 'when there is not a value in ccExpiration' do
+      before { user.subscription.ccExpiration = ""}
+      before { user.subscription.ccExpirationYear = year }
+      it { should eq('/4444')}      
+    end
+
+  end
+
+  describe 'expiration_in_valid_format?' do
+    subject { user.subscription.expiration_in_valid_format? }
+    context 'when in valid format' do
+      before { user.subscription.ccExpiration = "44/4444"}
+      it { should be_true }
+    end
+
+    context 'when not in valid format' do
+      context 'with just month' do
+        before { user.subscription.ccExpiration = "44/"}
+        it { should be_false }
+
+      end
+
+      context 'with just year' do
+        before { user.subscription.ccExpiration = "/4444"}
+        it { should be_false }
+      end
+
+      context 'with odd thigns' do
+        before { user.subscription.ccExpiration = "4a/3333"}
+        it { should be_false }
+      end
+
+      context 'when blank' do
+        before { user.subscription.ccExpiration = ""}
+        it { should be_false }
+      end
+    end
+
+  end
+
+  describe 'expiration_in_valid_month_format?' do
+    subject { user.subscription.expiration_in_valid_month_format? }
+
+    context 'when in valid format' do
+      before { user.subscription.ccExpiration = '44/'}
+      it { should be_true }
+    end
+
+    context 'when not in valid_format' do
+      context 'with junk' do
+        before { user.subscription.ccExpiration = 'asefas'}
+        it { should be_false }
+      end
+
+      context 'when blank' do
+        before { user.subscription.ccExpiration = ''}
+        it { should be_false }
+      end
+
+      context 'with full date' do
+        before { user.subscription.ccExpiration = '44/4444'}
+        it { should be_false }
+      end
+    end
+  end
+
+  describe 'expiration_in_valid_year_format?' do
+    subject { user.subscription.expiration_in_valid_year_format? }
+
+    context 'when in valid format' do
+      before { user.subscription.ccExpiration = '/4444'}
+      it { should be_true }
+    end
+
+    context 'when not in valid_format' do
+      context 'with junk' do
+        before { user.subscription.ccExpiration = 'asefas'}
+        it { should be_false }
+      end
+
+      context 'when blank' do
+        before { user.subscription.ccExpiration = ''}
+        it { should be_false }
+      end
+
+      context 'with full date' do
+        before { user.subscription.ccExpiration = '44/4444'}
+        it { should be_false }
+      end
     end
   end
 end

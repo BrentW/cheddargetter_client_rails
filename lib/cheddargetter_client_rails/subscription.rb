@@ -39,7 +39,9 @@ module CheddargetterClientRails
                   :ccState,
                   :customerCode,
                   :email,
-                  :zip
+                  :zip,
+                  :ccExpirationMonth,
+                  :ccExpirationYear
 
     validates_presence_of :firstName,
                           :lastName,
@@ -47,14 +49,21 @@ module CheddargetterClientRails
                           :planCode
                           #:customerCode, generally we call valid before unique identifier is called
 
-    validates_presence_of :ccNumber,
-                          :ccExpiration,
-                          :zip
-
     validate :unexpired
   
     validate :validates_presence_of_humanized
+
+    validates_presence_of :ccNumber,
+                      :ccExpiration,
+                      :zip, :if => :paid_plan?
   
+    def paid_plan?
+      if planCode
+        plans = CGClient.plans_get
+        !plans.plan(planCode)[:isFree]
+      end
+    end
+
     def unexpired
       if ccExpiration.present?
         month, year = ccExpiration.split("/").collect{|string| string.to_i }
@@ -106,7 +115,7 @@ module CheddargetterClientRails
     end
   
     def new_record?
-      !Subscription.customers_get({:customer_code =>customerCode})
+      !CheddargetterClientRails::Subscription.get(customerCode)
     end
   
     def save
@@ -203,6 +212,34 @@ module CheddargetterClientRails
         val = send(key)
         val if val.present?
       end.compact.present?
+    end
+
+    def ccExpirationMonth=(month)
+      if !expiration_in_valid_format? && expiration_in_valid_year_format?
+        @ccExpiration = month + ccExpiration
+      elsif !expiration_in_valid_format?
+        @ccExpiration = (month + '/')
+      end
+    end
+
+    def ccExpirationYear=(year)
+      if !expiration_in_valid_format? && expiration_in_valid_month_format?
+        @ccExpiration = ccExpiration + year
+      elsif !expiration_in_valid_format?
+        @ccExpiration = ('/' + year)
+      end
+    end
+
+    def expiration_in_valid_format?
+      ccExpiration.match(/^\d\d\/\d\d\d\d$/)
+    end
+
+    def expiration_in_valid_month_format?
+      ccExpiration.match(/^\d\d\/$/)
+    end
+
+    def expiration_in_valid_year_format?
+      ccExpiration.match(/^\/\d\d\d\d$/)
     end
   end
 end

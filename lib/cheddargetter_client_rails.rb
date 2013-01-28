@@ -1,13 +1,14 @@
 require 'active_support'
-require 'action_controller/record_identifier'
+#require 'action_controller/record_identifier'
 require 'cheddargetter_client'
-require 'rails/record_identifier'
+#require 'rails/record_identifier'
 require 'rails/naming'
 
 module CheddargetterClientRails
   autoload :Subscription, 'cheddargetter_client_rails/subscription'
   
   def self.included(base)
+    attr_accessor :has_subscription_options
     base.extend ClassMethods
     
     def subscription
@@ -102,6 +103,8 @@ module CheddargetterClientRails
   
   module ClassMethods
     def has_subscription(args = {})
+      self.class.send(:attr_accessor, :has_subscription_options)
+      self.has_subscription_options = args
       self.customer_code_column = args.delete(:customerCode) || :id
       raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !responds_to_customer_code_column?        
       
@@ -127,7 +130,7 @@ module CheddargetterClientRails
     end
 
     def responds_to_customer_code_column?
-      self.instance_methods.include?(customer_code_column.to_s) || 
+      self.instance_methods.include?(customer_code_column.to_sym) || 
       self.column_names.include?(customer_code_column.to_s)      
     end
 
