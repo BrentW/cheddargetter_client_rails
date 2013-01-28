@@ -1,6 +1,7 @@
 require 'active_support'
 require 'cheddargetter_client'
 require 'rails/naming'
+require 'country_select' if defined? ActionView
 
 module CheddargetterClientRails
   autoload :Subscription, 'cheddargetter_client_rails/subscription'
