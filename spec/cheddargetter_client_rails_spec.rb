@@ -123,16 +123,6 @@ describe "CheddargetterClientRails" do
     end
   end
   
-  describe 'before_create' do
-    let!(:test_user) {
-      TestUser.new  
-    }
-
-    before  { test_user.should_receive :create_subscription }
-    subject { test_user.run_callbacks(:save) }
-    it do subject end
-  end
-  
   describe 'subscription' do
     let!(:subscription) { # use ! to set it now!
       CheddargetterClientRails::Subscription.new
@@ -432,19 +422,6 @@ describe "CheddargetterClientRails" do
     end
   end
   
-  describe 'destroy_subscription' do
-    let!(:user) {
-      TestUser.new(:customer_code => 'CUSTOMER_CODE')  
-    }
-    
-    let(:subscription) { CheddargetterClientRails::Subscription.new }    
-    before { CheddargetterClientRails::Subscription.stub(:get).and_return subscription }
-    before { subscription.should_receive(:destroy) }
-    
-    subject { user.destroy_subscription }
-    it { subject }
-  end
-  
   describe 'build_subscription' do
     let!(:current_subscription) { 
       CheddargetterClientRails::Subscription.new({:firstName => "First", :lastName => "Last"}) 
@@ -581,5 +558,45 @@ describe "CheddargetterClientRails" do
       before { user.stub((user.class.shared_columns.first[1]).to_s + '_changed?').and_return true }
       it { should be_true }
     end
+  end
+
+  describe 'without shared_columns' do
+    before {
+      class NoSharedUser < ActiveRecord::Base
+        attr_accessor :customer_code, :first_name, :last_name, :plan_code, :email
+
+        def self.column_names
+          []
+        end
+              
+        has_subscription :customerCode => :customer_code
+      end
+    }
+
+    let(:user){ NoSharedUser.new(:customer_code => 'NOSHARE') }
+
+    before do
+      user.subscription.firstName = 'asdf'
+      user.subscription.lastName  = 'adfa'
+      user.subscription.email = 'asdf'
+      user.subscription.planCode = "FREE_PLAN"
+    end
+
+    subject { user.valid? }
+    it { should be_true }
+
+    context 'validate_subscription' do
+      it {
+        subject
+        user.errors.inspect.should eq('')
+      }
+    end
+
+    context 'shared_columns' do
+      #TODO NEED TO GET SHARED COLUMNS TO NOT BE REGISTERED DEFAULTLY IF THERE IS NO ACTIVE RECORD COLUMN NAMED
+      #THAT COLUMN: IE: email, first_name, last_name
+    end
+
+
   end
 end

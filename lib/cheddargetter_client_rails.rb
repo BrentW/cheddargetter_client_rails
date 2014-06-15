@@ -49,10 +49,6 @@ module CheddargetterClientRails
     def current_subscription
       @current_subscription ||= CheddargetterClientRails::Subscription.get(customer_code_column_value) if customer_code_column_value
     end
-    
-    def destroy_subscription
-      current_subscription.try(:destroy)
-    end
 
     def customer_code_column_value
       if self.class.send(:customer_code_column)
@@ -108,10 +104,10 @@ module CheddargetterClientRails
       raise ArgumentError.new("Record does not respond to #{customer_code_column.to_s}.") if !responds_to_customer_code_column?        
       
       shared = {}
-      shared[:email]      = args.delete(:email)      || :email
-      shared[:firstName]  = args.delete(:firstName)  || :first_name
-      shared[:lastName]   = args.delete(:lastName)   || :last_name
-      shared[:planCode]   = args.delete(:planCode)   || :plan_code
+      shared[:email]      = (args.delete(:email)      || :email)
+      shared[:firstName]  = (args.delete(:firstName)  || :first_name)
+      shared[:lastName]   = (args.delete(:lastName)   || :last_name)
+      shared[:planCode]   = (args.delete(:planCode)   || :plan_code)
       
       args.each do |key, value|
         shared[key] = value
